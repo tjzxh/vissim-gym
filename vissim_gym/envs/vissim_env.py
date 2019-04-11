@@ -155,7 +155,7 @@ class VissimEnv(Env):
         # no lead car
         if input_info["gap_lead"] > 145:
             desired_vel = self.speed_limit
-            a_idm = acce_base * (1 - pow(input_info["vel"] / desired_vel, exponent))
+            a_idm = a * (1 - pow(input_info["vel"] / desired_vel, exponent))
             r_t_first = 0
 
         # dynamic constraints
@@ -173,7 +173,7 @@ class VissimEnv(Env):
         if r_t_first != 100:
             reward = r_t_first
         else:
-            reward = input_info["vel"] / self.speed_limit - abs(a_idm - acce_pre) / 0.1 / 25 - input_info[
+            reward = input_info["vel"] / self.speed_limit - abs(a_idm - acce_pre) / 0.1 / 24 - input_info[
                 "gap_lead"] / self.sensor_dis
             print('part1=', input_info["vel"] / self.speed_limit, ' part2=', - input_info["gap_lead"] / self.sensor_dis,
                   ' part3=', - abs(a_idm - acce_pre) / 0.1 / 25)
