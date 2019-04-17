@@ -169,10 +169,10 @@ class VissimEnv(Env):
         input_info = self.input_info
         # dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"] and r_t_first != 0:
-            r_t_first = -10
+            r_t_first = -1
         # uncomfortable jerk
         if abs(a_idm - acce_pre) / 0.1 > 3.5:
-            r_t_first = -5
+            r_t_first = -0.5
         if r_t_first != 100:
             reward = r_t_first
         else:
