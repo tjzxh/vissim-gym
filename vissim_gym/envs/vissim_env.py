@@ -172,7 +172,7 @@ class VissimEnv(Env):
             r_t_first = -1
         # uncomfortable jerk
         if abs(a_idm - acce_pre) / 0.1 > 3.5:
-            r_t_first = -0.5
+            r_t_first = -1
         if r_t_first != 100:
             reward = r_t_first
         else:
