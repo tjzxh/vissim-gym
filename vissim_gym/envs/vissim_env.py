@@ -168,7 +168,7 @@ class VissimEnv(Env):
     def get_reward(self, desired_vel, a_idm, r_t_first, acce_pre):
         input_info = self.input_info
         # hint for desired vel
-        if input_info["vel"] / desired_vel - 0.6 < 0:
+        if input_info["vel"] / desired_vel - 0.6 < 0 and r_t_first != 0:
             r_t_first = -0.5
         # dangerous gap and too large gap
         if input_info["gap_lead"] < 1 * input_info["vel"] and r_t_first != 0:
