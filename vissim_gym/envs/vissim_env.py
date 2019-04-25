@@ -14,7 +14,6 @@ from goto import with_goto
 class VissimEnv(Env):
     def __init__(self):
         self.Vissim = com.Dispatch("Vissim.Vissim")
-        Path = os.getcwd()
         # Load a Vissim Network:
         # Filename = os.path.join(Path, 'test.inpx')
         Filename = r'C:\Users\29904\Desktop\new\test.inpx'
@@ -29,11 +28,12 @@ class VissimEnv(Env):
         self.sensor_dis = 150
         self.epi = 0
         self.time_step = 0
+        self.done = 0
         self.VissimDebug = self.VissimDebug()
         # Define action sapce and observation space
         self.action_space = spaces.Discrete(int(self.speed_limit) + 1)
         self.observation_space = spaces.Box(low=0, high=1, shape=(14,), dtype=np.float32)
-
+        self.num_envs = 1
         self.seed()
         self.viewer = None
         self.state = None
@@ -58,6 +58,7 @@ class VissimEnv(Env):
 
     @with_goto
     def step(self, action):
+        action = action[0]
         assert self.action_space.contains(action), "%r (%s) invalid" % (action, type(action))
         acce, desired_vel, r_t_first = self.acce_output(action)
         # Derive the velocity
@@ -117,7 +118,8 @@ class VissimEnv(Env):
             done = 0
         label.end
         self.time_step += 1
-        return observation, reward, done, r_t_first
+        self.done = done
+        return observation, reward, done, {}
 
     def acce_output(self, action):
         # directly output of desired vel
@@ -181,9 +183,9 @@ class VissimEnv(Env):
         if r_t_first != 100:
             reward = r_t_first
         else:
-            reward = - desired_vel / input_info["vel"] / 2 + input_info["vel"] / self.speed_limit - abs(
+            reward = - input_info["gap_lead"] / self.sensor_dis + input_info["vel"] / self.speed_limit - abs(
                 a_idm - acce_pre) / 0.1 / 24
-            print('part1=', - desired_vel / input_info["vel"] / 2, ' part2=', input_info["vel"] / self.speed_limit,
+            print('part1=', - input_info["gap_lead"] / self.sensor_dis, ' part2=', input_info["vel"] / self.speed_limit,
                   ' part3=', - abs(a_idm - acce_pre) / 0.1 / 24)
         # reward upper bound
         if reward > 1:
@@ -202,6 +204,7 @@ class VissimEnv(Env):
             self.Vissim.Simulation.Stop()
         self.epi += 1
         self.time_step = 0
+        self.done = 0
         print("Episode : " + str(self.epi))
         # Step 1 To create a different traffic flow for every episode
         observation = []
@@ -510,7 +513,7 @@ class VissimEnv(Env):
                                 gap_rightlag / standard_dis, gap_lead / standard_dis, gap_lag / standard_dis,
                                 vel_rightlead / standard_vel, vel_rightlag / standard_vel, vel_leftlead / standard_vel,
                                 vel_leftlag / standard_vel, vel_lead / standard_vel, vel_lag / standard_vel,
-                                vel / standard_vel, lane / lane_num])
+                                vel / standard_vel, lane / lane_num]).reshape(1, 14)
         return observation
 
     class VissimDebug():
