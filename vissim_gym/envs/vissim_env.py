@@ -60,7 +60,7 @@ class VissimEnv(Env):
     def step(self, action):
         action = action[0]
         assert self.action_space.contains(action), "%r (%s) invalid" % (action, type(action))
-        acce, desired_vel, r_t_first = self.acce_output(action)
+        acce, desired_vel = self.acce_output(action)
         # Derive the velocity
         vel = self.input_info["vel"]
         link_coordinate = self.input_info["link_coordinate"]
@@ -105,7 +105,7 @@ class VissimEnv(Env):
         input_info["lane"] = av_lane
         input_info["lane_num"] = 3
         self.input_info = input_info
-        reward = self.get_reward(desired_vel, acce, r_t_first, ini_acce)
+        reward = self.get_reward(desired_vel, acce, ini_acce)
         observation = self.make_observaton(input_info)
         print("Episode", self.epi, "step", self.time_step, "AV pos=", link_coordinate, "desired vel=", desired_vel,
               "a=",
@@ -124,11 +124,9 @@ class VissimEnv(Env):
     def acce_output(self, action):
         # directly output of desired vel
         desired_vel = action
-        update_flag = 1
         # get the state
         input_info = self.input_info
         # for the desired vel is too small OR too large
-        r_t_first = 100
         if desired_vel < 5:
             desired_vel = 5
         if desired_vel > self.speed_limit:
@@ -145,37 +143,38 @@ class VissimEnv(Env):
             acce_base = b
         a_idm = acce_base * (1 - pow(input_info["vel"] / desired_vel, exponent))
 
-        ## hard constrains for acceleration
-        # urgent stop
-        if input_info["vel_lead"] < 1:
-            if input_info["gap_lead"] > s0:
-                stop_dis = input_info["gap_lead"] - s0
-            else:
-                stop_dis = input_info["gap_lead"]
-            a_idm = - pow(input_info["vel"], 2) / 2 / stop_dis
-            r_t_first = 0
-        # no lead car
-        if input_info["gap_lead"] > 145:
-            desired_vel = self.speed_limit
-            a_idm = a * (1 - pow(input_info["vel"] / desired_vel, exponent))
-            r_t_first = 0
+        # ## hard constrains for acceleration
+        # # urgent stop
+        # if input_info["vel_lead"] < 1:
+        #     if input_info["gap_lead"] > s0:
+        #         stop_dis = input_info["gap_lead"] - s0
+        #     else:
+        #         stop_dis = input_info["gap_lead"]
+        #     a_idm = - pow(input_info["vel"], 2) / 2 / stop_dis
+        #     r_t_first = 0
+        # # no lead car
+        # if input_info["gap_lead"] > 145:
+        #     desired_vel = self.speed_limit
+        #     a_idm = a * (1 - pow(input_info["vel"] / desired_vel, exponent))
+        #     r_t_first = 0
 
         # dynamic constraints
         if a_idm < -3:
             a_idm = -3
         if a_idm > 3:
             a_idm = 3
-        return a_idm, desired_vel, r_t_first
+        return a_idm, desired_vel
 
-    def get_reward(self, desired_vel, a_idm, r_t_first, acce_pre):
+    def get_reward(self, desired_vel, a_idm, acce_pre):
         input_info = self.input_info
+        r_t_first = 100
         # hint for desired vel
-        if input_info["vel"] / desired_vel - 0.6 < 0 and r_t_first != 0:
+        if input_info["vel"] / desired_vel - 0.6 < 0:
             r_t_first = -0.5
         # dangerous gap and too large gap
-        if input_info["gap_lead"] < 1 * input_info["vel"] and r_t_first != 0:
+        if input_info["gap_lead"] < 1 * input_info["vel"]:
             r_t_first = -1
-        if input_info["gap_lead"] > 5 * input_info["vel"] and r_t_first != 0:
+        if input_info["gap_lead"] > 5 * input_info["vel"]:
             r_t_first = -0.5
         # # uncomfortable jerk
         # if abs(a_idm - acce_pre) / 0.1 > 3.5:
