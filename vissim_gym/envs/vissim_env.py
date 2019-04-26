@@ -31,7 +31,7 @@ class VissimEnv(Env):
         self.done = 0
         self.VissimDebug = self.VissimDebug()
         # Define action sapce and observation space
-        self.action_space = spaces.Discrete(int(self.speed_limit) + 1)
+        self.action_space = spaces.Box(low=np.array([5.0]), high=np.array([self.speed_limit]), dtype=np.float32)
         self.observation_space = spaces.Box(low=0, high=1, shape=(14,), dtype=np.float32)
         self.num_envs = 1
         self.seed()
