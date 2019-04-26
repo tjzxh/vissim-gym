@@ -31,7 +31,7 @@ class VissimEnv(Env):
         self.done = 0
         self.VissimDebug = self.VissimDebug()
         # Define action sapce and observation space
-        self.action_space = spaces.Discrete(int(self.speed_limit * 4))
+        self.action_space = spaces.Discrete(int(self.speed_limit * 4) - 5)
         self.observation_space = spaces.Box(low=0, high=1, shape=(14,), dtype=np.float32)
         self.num_envs = 1
         self.seed()
@@ -123,14 +123,14 @@ class VissimEnv(Env):
 
     def acce_output(self, action):
         # directly output of desired vel
-        desired_vel = action / 3.6
+        desired_vel = (action + 5) / 3.6
         # get the state
         input_info = self.input_info
-        # for the desired vel is too small OR too large
-        if desired_vel < 5:
-            desired_vel = 5
-        if desired_vel > self.speed_limit:
-            desired_vel = self.speed_limit
+        # # for the desired vel is too small OR too large
+        # if desired_vel < 5:
+        #     desired_vel = 5
+        # if desired_vel > self.speed_limit:
+        #     desired_vel = self.speed_limit
         # derive acceleration using IDM
         s0 = 2
         T = 1.5
