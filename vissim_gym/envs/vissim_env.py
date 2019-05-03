@@ -186,11 +186,11 @@ class VissimEnv(Env):
                         abs(a_idm - acce_pre) / 0.1 / 24)
             print('part1=', input_info["vel"] / self.speed_limit, ' part2=', - input_info["gap_lead"] / self.sensor_dis,
                   ' part3=', - (abs(a_idm - acce_pre) / 0.1 / 24))
-        # reward upper bound
-        if reward > 1:
-            reward = 1
-        if reward < -1:
-            reward = -1
+            # reward upper bound
+            if reward > 1:
+                reward = 1
+            if reward < -1:
+                reward = -1
         return reward
 
     def reset(self):
