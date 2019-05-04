@@ -58,7 +58,8 @@ class VissimEnv(Env):
 
     @with_goto
     def step(self, action):
-        action = action[0]
+        if not type(action) == np.int64:
+            action = action[0]
         assert self.action_space.contains(action), "%r (%s) invalid" % (action, type(action))
         acce, desired_vel = self.acce_output(action)
         # Derive the velocity
