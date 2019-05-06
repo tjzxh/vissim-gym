@@ -31,7 +31,7 @@ class VissimEnv(Env):
         self.done = 0
         self.VissimDebug = self.VissimDebug()
         # Define action sapce and observation space
-        self.action_space = spaces.Discrete(int((self.speed_limit - 5) * 10))
+        self.action_space = spaces.Discrete(int((self.speed_limit - 5) * 20))
         self.observation_space = spaces.Box(low=0, high=1, shape=(14,), dtype=np.float32)
         self.num_envs = 1
         self.seed()
@@ -184,9 +184,9 @@ class VissimEnv(Env):
             reward = r_t_first
         else:
             reward = input_info["vel"] / self.speed_limit - input_info["gap_lead"] / self.sensor_dis - (
-                    abs(a_idm - acce_pre) / 0.1 / 60)
+                    abs(a_idm - acce_pre) / 0.1 / 38)
             print('part1=', input_info["vel"] / self.speed_limit, ' part2=', - input_info["gap_lead"] / self.sensor_dis,
-                  ' part3=', - (abs(a_idm - acce_pre) / 0.1 / 60))
+                  ' part3=', - (abs(a_idm - acce_pre) / 0.1 / 38))
             # reward upper bound
             if reward > 1:
                 reward = 1
