@@ -124,7 +124,7 @@ class VissimEnv(Env):
 
     def acce_output(self, action):
         # directly output of desired vel
-        desired_vel = action / 10 + 5
+        desired_vel = action / 20 + 5
         # get the state
         input_info = self.input_info
         # # for the desired vel is too small OR too large
