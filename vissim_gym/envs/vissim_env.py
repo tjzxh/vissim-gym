@@ -31,9 +31,8 @@ class VissimEnv(Env):
         self.done = 0
         self.VissimDebug = self.VissimDebug()
         # Define action sapce and observation space
-        self.action_space = spaces.Discrete(int((self.speed_limit - 5) * 20))
+        self.action_space = spaces.Discrete(int((self.speed_limit - 5) * 10))
         self.observation_space = spaces.Box(low=0, high=1, shape=(14,), dtype=np.float32)
-        self.num_envs = 1
         self.seed()
         self.viewer = None
         self.state = None
@@ -124,7 +123,7 @@ class VissimEnv(Env):
 
     def acce_output(self, action):
         # directly output of desired vel
-        desired_vel = action / 20 + 5
+        desired_vel = action / 10 + 5
         # get the state
         input_info = self.input_info
         # # for the desired vel is too small OR too large
