@@ -159,10 +159,10 @@ class VissimEnv(Env):
         #     r_t_first = 0
 
         # dynamic constraints
-        if a_idm < -3:
-            a_idm = -3
-        if a_idm > 3:
-            a_idm = 3
+        if a_idm < -b:
+            a_idm = -b
+        if a_idm > a:
+            a_idm = a
         return a_idm, desired_vel
 
     def get_reward(self, desired_vel, a_idm, acce_pre):
@@ -183,9 +183,9 @@ class VissimEnv(Env):
             reward = r_t_first
         else:
             reward = input_info["vel"] / self.speed_limit - input_info["gap_lead"] / self.sensor_dis - (
-                    abs(a_idm - acce_pre) / 0.1 / 38)
+                    abs(a_idm - acce_pre) / 0.1 / 50)
             print('part1=', input_info["vel"] / self.speed_limit, ' part2=', - input_info["gap_lead"] / self.sensor_dis,
-                  ' part3=', - (abs(a_idm - acce_pre) / 0.1 / 38))
+                  ' part3=', - (abs(a_idm - acce_pre) / 0.1 / 50))
             # reward upper bound
             if reward > 1:
                 reward = 1
