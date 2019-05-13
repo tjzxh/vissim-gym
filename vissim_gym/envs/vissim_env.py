@@ -16,13 +16,13 @@ class VissimEnv(Env):
         self.Vissim = com.Dispatch("Vissim.Vissim")
         # Load a Vissim Network:
         # Filename = os.path.join(Path, 'test.inpx')
-        Filename = r'C:\Users\29904\Desktop\new\test.inpx'
+        Filename = r'C:\Users\29904\Desktop\new\test_with_50kmh.inpx'
         flag_read_additionally = False  # you can read network(elements) additionally, in this case set "flag_read_additionally" to true
         self.Vissim.LoadNet(Filename, flag_read_additionally)
 
         # Load a Layout:
         # Filename = os.path.join(Path, 'test.layx')
-        Filename = r'C:\Users\29904\Desktop\new\test.layx'
+        Filename = r'C:\Users\29904\Desktop\new\test_with_50kmh.layx'
         self.Vissim.LoadLayout(Filename)
         self.speed_limit = 100 / 3.6
         self.sensor_dis = 150
@@ -173,19 +173,17 @@ class VissimEnv(Env):
         #     r_t_first = -0.5
         # dangerous gap and too large gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
-            r_t_first = -10
-        # if input_info["gap_lead"] > 5 * input_info["vel"]:
-        #     r_t_first = -0.5
+            r_t_first = -1
+        if input_info["gap_lead"] > 5 * input_info["vel"] and a_idm < 0:
+            r_t_first = -0.5
         # # uncomfortable jerk
         # if abs(a_idm - acce_pre) / 0.1 > 3.5:
         #     r_t_first = - abs(a_idm - acce_pre) / 0.1 / 24
         if r_t_first != 100:
             reward = r_t_first
         else:
-            reward = input_info["vel"] / self.speed_limit - input_info["gap_lead"] / self.sensor_dis - (
-                    abs(a_idm - acce_pre) / 0.1 / 50)
-            print('part1=', input_info["vel"] / self.speed_limit, ' part2=', - input_info["gap_lead"] / self.sensor_dis,
-                  ' part3=', - (abs(a_idm - acce_pre) / 0.1 / 50))
+            reward = input_info["vel"] / self.speed_limit - (abs(a_idm - acce_pre) / 0.1 / 24)
+            print('part1=', input_info["vel"] / self.speed_limit, ' part2=', - (abs(a_idm - acce_pre) / 0.1 / 24))
             # reward upper bound
             if reward > 1:
                 reward = 1
