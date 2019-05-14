@@ -173,7 +173,7 @@ class VissimEnv(Env):
         #     r_t_first = -0.5
         # dangerous gap and too large gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
-            r_t_first = -1
+            r_t_first = -16
         if input_info["gap_lead"] > 5 * input_info["vel"] and a_idm < 0:
             r_t_first = -0.5
         # # uncomfortable jerk
@@ -182,8 +182,8 @@ class VissimEnv(Env):
         if r_t_first != 100:
             reward = r_t_first
         else:
-            reward = input_info["vel"] / self.speed_limit - (abs(a_idm - acce_pre) / 0.1 / 24)
-            print('part1=', input_info["vel"] / self.speed_limit, ' part2=', - (abs(a_idm - acce_pre) / 0.1 / 24))
+            reward = input_info["vel"] / self.speed_limit - (abs(a_idm - acce_pre) / 0.1 / 60)
+            print('part1=', input_info["vel"] / self.speed_limit, ' part2=', - (abs(a_idm - acce_pre) / 0.1 / 60))
             # reward upper bound
             if reward > 1:
                 reward = 1
