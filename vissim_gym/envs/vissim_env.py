@@ -136,12 +136,12 @@ class VissimEnv(Env):
         T = 1.5
         a = 0.73
         b = 1.67
-        exponent = 4
+        exponent4ac = 4
+        exponent4de = 0.5
         if input_info["vel"] < desired_vel:
-            acce_base = a
+            a_idm = a * (1 - pow(input_info["vel"] / desired_vel, exponent4ac))
         else:
-            acce_base = b
-        a_idm = acce_base * (1 - pow(input_info["vel"] / desired_vel, exponent))
+            a_idm = b * (1 - pow(input_info["vel"] / desired_vel, exponent4de))
 
         # ## hard constrains for acceleration
         # # urgent stop
@@ -168,10 +168,11 @@ class VissimEnv(Env):
     def get_reward(self, desired_vel, a_idm, acce_pre):
         input_info = self.input_info
         r_t_first = 100
-        # # hint for desired vel
-        # if input_info["vel"] / desired_vel - 0.6 < 0:
-        #     r_t_first = -0.5
         # dangerous gap and too large gap
+        # yellow sign for small gap and acceleration
+        if input_info["gap_lead"] < 1.5 * input_info["vel"] and a_idm > 0:
+            r_t_first = -0.5
+        # red sign for dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
             r_t_first = -16
         if (input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80) and a_idm < 0:
