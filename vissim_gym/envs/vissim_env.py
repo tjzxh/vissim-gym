@@ -174,7 +174,7 @@ class VissimEnv(Env):
             r_t_first = -0.5
         # red sign for dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
-            r_t_first = -10
+            r_t_first = -20
         if (input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80) and a_idm < 0:
             r_t_first = -0.5
         # # uncomfortable jerk
