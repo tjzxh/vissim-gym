@@ -32,7 +32,7 @@ class VissimEnv(Env):
         self.VissimDebug = self.VissimDebug()
         # Define action sapce and observation space
         self.action_space = spaces.Discrete(int((self.speed_limit - 5) * 10))
-        self.observation_space = spaces.Box(low=0, high=1, shape=(14,), dtype=np.float32)
+        self.observation_space = spaces.Box(low=0, high=1, shape=(3,), dtype=np.float32)
         self.seed()
         self.viewer = None
         self.state = None
@@ -175,17 +175,16 @@ class VissimEnv(Env):
         # red sign for dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
             r_t_first = -20
-        # if (input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80) and a_idm < 0:
-        #     r_t_first = -0.5
-        # # uncomfortable jerk
-        # if abs(a_idm - acce_pre) / 0.1 > 3.5:
-        #     r_t_first = - abs(a_idm - acce_pre) / 0.1 / 24
+        if (input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80) and a_idm < 0:
+            r_t_first = -0.5
+        jerk = abs(a_idm - acce_pre) / 0.1
+        if jerk > 3.5:
+            r_t_first = -jerk / 24
         if r_t_first != 100:
             reward = r_t_first
         else:
-            reward = input_info["vel"] / self.speed_limit - input_info["gap_lead"] / self.sensor_dis / 10
-            print('part1=', input_info["vel"] / self.speed_limit, 'part2=',
-                  - input_info["gap_lead"] / self.sensor_dis / 10)
+            reward = input_info["vel"] / self.speed_limit
+            print('part1=', input_info["vel"] / self.speed_limit)
             # reward upper bound
             if reward > 1:
                 reward = 1
@@ -508,11 +507,12 @@ class VissimEnv(Env):
         lane_num = input_info["lane_num"]
         standard_dis = self.sensor_dis
         standard_vel = self.speed_limit
-        observation = np.array([gap_leftlead / standard_dis, gap_leftlag / standard_dis, gap_rightlead / standard_dis,
-                                gap_rightlag / standard_dis, gap_lead / standard_dis, gap_lag / standard_dis,
-                                vel_rightlead / standard_vel, vel_rightlag / standard_vel, vel_leftlead / standard_vel,
-                                vel_leftlag / standard_vel, vel_lead / standard_vel, vel_lag / standard_vel,
-                                vel / standard_vel, lane / lane_num]).reshape(1, 14)
+        # observation = np.array([gap_leftlead / standard_dis, gap_leftlag / standard_dis, gap_rightlead / standard_dis,
+        #                         gap_rightlag / standard_dis, gap_lead / standard_dis, gap_lag / standard_dis,
+        #                         vel_rightlead / standard_vel, vel_rightlag / standard_vel, vel_leftlead / standard_vel,
+        #                         vel_leftlag / standard_vel, vel_lead / standard_vel, vel_lag / standard_vel,
+        #                         vel / standard_vel, lane / lane_num]).reshape(1, 14)
+        observation = np.array([gap_lead / standard_dis, vel_lead / standard_vel, vel / standard_vel]).reshape(1, 3)
         return observation
 
     class VissimDebug():
