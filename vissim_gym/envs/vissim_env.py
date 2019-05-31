@@ -152,11 +152,10 @@ class VissimEnv(Env):
         #         stop_dis = input_info["gap_lead"]
         #     a_idm = - pow(input_info["vel"], 2) / 2 / stop_dis
         #     r_t_first = 0
-        # # no lead car
-        # if input_info["gap_lead"] > 145:
-        #     desired_vel = self.speed_limit
-        #     a_idm = a * (1 - pow(input_info["vel"] / desired_vel, exponent))
-        #     r_t_first = 0
+        # no lead car
+        if input_info["gap_lead"] > 145:
+            desired_vel = self.speed_limit
+            a_idm = a * (1 - pow(input_info["vel"] / desired_vel, exponent4ac))
 
         # dynamic constraints
         if a_idm < -b:
