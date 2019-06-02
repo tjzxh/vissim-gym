@@ -167,10 +167,9 @@ class VissimEnv(Env):
     def get_reward(self, desired_vel, a_idm, acce_pre):
         input_info = self.input_info
         r_t_first = 100
-        # dangerous gap and too large gap
-        # yellow sign for small gap and acceleration
-        # if input_info["gap_lead"] < 1.5 * input_info["vel"] and a_idm > 0:
-        #     r_t_first = -0.5
+        # no need to learn
+        if desired_vel == self.speed_limit:
+            r_t_first = 0
         # red sign for dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
             r_t_first = -10
