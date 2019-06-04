@@ -173,7 +173,7 @@ class VissimEnv(Env):
         # red sign for dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
             r_t_first = -10
-        if (input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80) and a_idm < 0:
+        if input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80:
             r_t_first = -input_info["gap_lead"] / self.sensor_dis
         jerk = abs(a_idm - acce_pre) / 0.1
         if jerk > 3.5:
