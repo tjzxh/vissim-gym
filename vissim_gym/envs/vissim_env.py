@@ -153,9 +153,9 @@ class VissimEnv(Env):
         #     a_idm = - pow(input_info["vel"], 2) / 2 / stop_dis
         #     r_t_first = 0
         # no lead car
-        if input_info["gap_lead"] > 145:
-            desired_vel = self.speed_limit
-            a_idm = a * (1 - pow(input_info["vel"] / desired_vel, exponent4ac))
+        # if input_info["gap_lead"] > 145:
+        #     desired_vel = self.speed_limit
+        #     a_idm = a * (1 - pow(input_info["vel"] / desired_vel, exponent4ac))
 
         # dynamic constraints
         if a_idm < -b:
@@ -167,14 +167,14 @@ class VissimEnv(Env):
     def get_reward(self, desired_vel, a_idm, acce_pre):
         input_info = self.input_info
         r_t_first = 100
-        # no need to learn
-        if desired_vel == self.speed_limit:
-            r_t_first = 0
+        # # no need to learn
+        # if desired_vel == self.speed_limit:
+        #     r_t_first = 0
         # red sign for dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
             r_t_first = -10
         if (input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80) and a_idm < 0:
-            r_t_first = -0.5
+            r_t_first = -input_info["gap_lead"] / self.sensor_dis
         jerk = abs(a_idm - acce_pre) / 0.1
         if jerk > 3.5:
             r_t_first = -jerk / 24
