@@ -177,10 +177,7 @@ class VissimEnv(Env):
             r_t_first = -input_info["gap_lead"] / self.sensor_dis
         jerk = abs(a_idm - acce_pre) / 0.1
         if jerk > 3.5:
-            if r_t_first != 100:
-                r_t_first += -jerk / 24
-            else:
-                r_t_first = -jerk / 24
+            r_t_first = min(r_t_first, -jerk / 24)
         if r_t_first != 100:
             reward = r_t_first
         else:
