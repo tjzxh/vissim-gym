@@ -176,13 +176,13 @@ class VissimEnv(Env):
         if input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80:
             r_t_first = -input_info["gap_lead"] / self.sensor_dis
         jerk = abs(a_idm - acce_pre) / 0.1
-        if jerk > 3.5:
-            r_t_first = min(r_t_first, -jerk / 24)
+        # if jerk > 3.5:
+        #     r_t_first = -jerk / 24
         if r_t_first != 100:
             reward = r_t_first
         else:
-            reward = input_info["vel"] / self.speed_limit
-            print('part1=', input_info["vel"] / self.speed_limit)
+            reward = input_info["vel"] / self.speed_limit - jerk / 24
+            print('part1=', input_info["vel"] / self.speed_limit, 'part2=', -jerk / 24)
             # reward upper bound
             if reward > 1:
                 reward = 1
