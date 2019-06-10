@@ -167,22 +167,21 @@ class VissimEnv(Env):
     def get_reward(self, desired_vel, a_idm, acce_pre):
         input_info = self.input_info
         r_t_first = 100
-        # # no need to learn
-        # if desired_vel == self.speed_limit:
-        #     r_t_first = 0
+        # uncomfortable jerk first
+        jerk = abs(a_idm - acce_pre) / 0.1
+        if jerk > 3.5:
+            r_t_first = min(-0.5, -jerk / 24)
         # red sign for dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
             r_t_first = -10
         if input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80:
-            r_t_first = -input_info["gap_lead"] / self.sensor_dis
-        jerk = abs(a_idm - acce_pre) / 0.1
-        # if jerk > 3.5:
-        #     r_t_first = -jerk / 24
+            r_t_first = min(-0.5, -input_info["gap_lead"] / self.sensor_dis)
+
         if r_t_first != 100:
             reward = r_t_first
         else:
-            reward = input_info["vel"] / self.speed_limit - jerk / 24
-            print('part1=', input_info["vel"] / self.speed_limit, 'part2=', -jerk / 24)
+            reward = input_info["vel"] / self.speed_limit
+            print('part1=', input_info["vel"] / self.speed_limit)
             # reward upper bound
             if reward > 1:
                 reward = 1
