@@ -170,7 +170,7 @@ class VissimEnv(Env):
         # uncomfortable jerk first
         jerk = abs(a_idm - acce_pre) / 0.1
         if jerk > 3.5:
-            r_t_first = -0.5
+            r_t_first = -jerk / 24
         # red sign for dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
             r_t_first = -10
