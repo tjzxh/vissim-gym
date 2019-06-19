@@ -176,15 +176,15 @@ class VissimEnv(Env):
             r_t_first = -10
         if input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80:
             if a_idm > 0:
-                r_t_first = -0.1
-            else:
                 r_t_first = -0.5
+            else:
+                r_t_first = -1
 
         if r_t_first != 100:
             reward = r_t_first
         else:
-            reward = input_info["vel"] / self.speed_limit / 2
-            print('part1=', input_info["vel"] / self.speed_limit / 2)
+            reward = input_info["vel"] / self.speed_limit
+            print('part1=', input_info["vel"] / self.speed_limit)
             # reward upper bound
             if reward > 1:
                 reward = 1
