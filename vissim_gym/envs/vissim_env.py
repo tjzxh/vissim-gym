@@ -176,7 +176,7 @@ class VissimEnv(Env):
             r_t_first = -10
         if input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80:
             norm_dis = input_info["gap_lead"]/self.sensor_dis
-            r_t_first = -norm_dis
+            r_t_first = -0.5
 
         if r_t_first != 100:
             reward = r_t_first
