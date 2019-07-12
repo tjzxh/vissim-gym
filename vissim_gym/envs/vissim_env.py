@@ -13,7 +13,7 @@ from goto import with_goto
 
 class VissimEnv(Env):
     def __init__(self):
-        self.Vissim = com.Dispatch("Vissim.Vissim")
+        self.Vissim = com.Dispatch("Vissim.Vissim.11")
         # Load a Vissim Network:
         # Filename = os.path.join(Path, 'test.inpx')
         Filename = r'C:\Users\29904\Desktop\new\test.inpx'
@@ -167,16 +167,17 @@ class VissimEnv(Env):
     def get_reward(self, desired_vel, a_idm, acce_pre):
         input_info = self.input_info
         r_t_first = 100
-        # uncomfortable jerk first
-        jerk = abs(a_idm - acce_pre) / 0.1
-        if jerk > 3.5:
-            r_t_first = -jerk / 24
         # red sign for dangerous gap
         if input_info["gap_lead"] < 1 * input_info["vel"]:
             r_t_first = -10
         if input_info["gap_lead"] > 5 * input_info["vel"] or input_info["gap_lead"] > 80:
             norm_dis = input_info["gap_lead"]/self.sensor_dis
             r_t_first = -0.5
+
+        # uncomfortable jerk last
+        jerk = abs(a_idm - acce_pre) / 0.1
+        if jerk > 3.5:
+            r_t_first = -jerk / 24
 
         if r_t_first != 100:
             reward = r_t_first
